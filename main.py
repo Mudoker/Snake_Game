@@ -37,14 +37,14 @@ class Donut:
 
     def get_random_pos(self, snake_pos):
         self.position = Vector2(
-            random.randint(1, board_size - 5), random.randint(0, board_size - 2)
+            random.randint(1, board_size - 5), random.randint(1, board_size - 2)
         )
 
         # Check if the generated position conflicts with the snake's body positions
         while self.position in snake_pos:
             # If the position conflicts with the snake's body, generate a new position
             self.position = Vector2(
-                random.randint(1, board_size - 5), random.randint(0, board_size - 2)
+                random.randint(1, board_size - 5), random.randint(1, board_size - 2)
             )
 
 
