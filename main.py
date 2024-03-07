@@ -245,10 +245,15 @@ class Main:
 
         # Snake hits wall
         if not (0 <= head.x < board_size and 0 <= head.y < board_size):
+            print("Final score: " + str(len(self.snake.body) - 3))
             self.snake.reset()
             return
 
+        # Snake eats itself
         if head in self.snake.body[1:]:
+            if not (self.snake.direction == Vector2(0, 0)):
+                print("Final score: " + str(len(self.snake.body) - 3))
+
             self.snake.reset()
             return
 
