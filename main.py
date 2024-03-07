@@ -37,14 +37,14 @@ class Donut:
 
     def get_random_pos(self, snake_pos):
         self.position = Vector2(
-            random.randint(0, board_size - 5), random.randint(0, board_size - 5)
+            random.randint(1, board_size - 5), random.randint(0, board_size - 2)
         )
 
         # Check if the generated position conflicts with the snake's body positions
         while self.position in snake_pos:
             # If the position conflicts with the snake's body, generate a new position
             self.position = Vector2(
-                random.randint(0, board_size - 5), random.randint(0, board_size - 5)
+                random.randint(1, board_size - 5), random.randint(0, board_size - 2)
             )
 
 
@@ -244,7 +244,7 @@ class Main:
         head = self.snake.body[0]
 
         # Snake hits wall
-        if not (0 <= head.x < board_size and 0 <= head.y < board_size):
+        if not (1 <= head.x < (board_size - 1) and 1 <= head.y < (board_size - 1)):
             print("Final score: " + str(len(self.snake.body) - 3))
             self.snake.reset()
             return
@@ -272,14 +272,29 @@ class Main:
         for row in range(board_size):
             if row % 2 == 0:
                 for col in range(board_size):
-                    if col % 2 == 0:
+                    if row == 0 or row == (board_size - 1):
                         rect = pygame.Rect(
                             col * cell_size, row * cell_size, cell_size, cell_size
                         )
-                        pygame.draw.rect(screen, (80, 200, 120), rect)
+                        pygame.draw.rect(screen, pygame.Color("orange"), rect)
+                    elif col % 2 == 0:
+                        rect = pygame.Rect(
+                            col * cell_size, row * cell_size, cell_size, cell_size
+                        )
+
+                        if col == 0 or col == (board_size - 1):
+                            pygame.draw.rect(screen, pygame.Color("orange"), rect)
+                        else:
+                            pygame.draw.rect(screen, (80, 200, 120), rect)
             else:
                 for col in range(board_size):
-                    if col % 2 != 0:
+                    if col % 2 == 0:
+                        if col == 0 or col == board_size - 1:
+                            rect = pygame.Rect(
+                                col * cell_size, row * cell_size, cell_size, cell_size
+                            )
+                            pygame.draw.rect(screen, pygame.Color("orange"), rect)
+                    elif col % 2 != 0:
                         rect = pygame.Rect(
                             col * cell_size, row * cell_size, cell_size, cell_size
                         )
