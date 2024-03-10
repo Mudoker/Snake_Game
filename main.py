@@ -1,8 +1,8 @@
-import math
 import random
 import pygame
 import sys
 from pygame import Vector2
+import os
 
 pygame.init()
 
@@ -14,8 +14,18 @@ pygame.display.set_caption("Snake Game")
 font = pygame.font.SysFont("Arial", 24)
 
 
+def resource_path(relative_path):
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
 # Assets
-donut = pygame.image.load("assets/images/donut.png").convert_alpha()
+donut = pygame.image.load(resource_path("assets/images/donut.png")).convert_alpha()
 new_width = cell_size
 new_height = cell_size
 donut_resized = pygame.transform.scale(donut, (new_width, new_height))
@@ -36,15 +46,21 @@ class Donut:
         screen.blit(donut_resized, rect)
 
     def get_random_pos(self, snake_pos):
+        # Define the bounds for the middle area of the board
+        min_bound = 3
+        max_bound = board_size - 4
+
+        # Generate a random position within the middle area
         self.position = Vector2(
-            random.randint(1, board_size - 5), random.randint(1, board_size - 2)
+            random.randint(min_bound, max_bound), random.randint(min_bound, max_bound)
         )
 
         # Check if the generated position conflicts with the snake's body positions
         while self.position in snake_pos:
             # If the position conflicts with the snake's body, generate a new position
             self.position = Vector2(
-                random.randint(1, board_size - 5), random.randint(1, board_size - 2)
+                random.randint(min_bound, max_bound),
+                random.randint(min_bound, max_bound),
             )
 
 
@@ -55,58 +71,62 @@ class Snake:
         self.is_icr_size = False
 
         # Snake assets
-        # Load head images
-        self.head_up = pygame.image.load("assets/images/head_up.png").convert_alpha()
+        # Load and scale the head images
+        self.head_up = pygame.image.load(
+            resource_path("assets/images/head_up.png")
+        ).convert_alpha()
         self.head_up = pygame.transform.scale(self.head_up, (cell_size, cell_size))
 
         self.head_down = pygame.image.load(
-            "assets/images/head_down.png"
+            resource_path("assets/images/head_down.png")
         ).convert_alpha()
         self.head_down = pygame.transform.scale(self.head_down, (cell_size, cell_size))
 
         self.head_right = pygame.image.load(
-            "assets/images/head_right.png"
+            resource_path("assets/images/head_right.png")
         ).convert_alpha()
         self.head_right = pygame.transform.scale(
             self.head_right, (cell_size, cell_size)
         )
 
         self.head_left = pygame.image.load(
-            "assets/images/head_left.png"
+            resource_path("assets/images/head_left.png")
         ).convert_alpha()
         self.head_left = pygame.transform.scale(self.head_left, (cell_size, cell_size))
 
         # Load and scale the tail images
-        self.tail_up = pygame.image.load("assets/images/tail_up.png").convert_alpha()
+        self.tail_up = pygame.image.load(
+            resource_path("assets/images/tail_up.png")
+        ).convert_alpha()
         self.tail_up = pygame.transform.scale(self.tail_up, (cell_size, cell_size))
 
         self.tail_down = pygame.image.load(
-            "assets/images/tail_down.png"
+            resource_path("assets/images/tail_down.png")
         ).convert_alpha()
         self.tail_down = pygame.transform.scale(self.tail_down, (cell_size, cell_size))
 
         self.tail_right = pygame.image.load(
-            "assets/images/tail_right.png"
+            resource_path("assets/images/tail_right.png")
         ).convert_alpha()
         self.tail_right = pygame.transform.scale(
             self.tail_right, (cell_size, cell_size)
         )
 
         self.tail_left = pygame.image.load(
-            "assets/images/tail_left.png"
+            resource_path("assets/images/tail_left.png")
         ).convert_alpha()
         self.tail_left = pygame.transform.scale(self.tail_left, (cell_size, cell_size))
 
         # Load and scale the body images
         self.body_vertical = pygame.image.load(
-            "assets/images/body_vertical.png"
+            resource_path("assets/images/body_vertical.png")
         ).convert_alpha()
         self.body_vertical = pygame.transform.scale(
             self.body_vertical, (cell_size, cell_size)
         )
 
         self.body_horizontal = pygame.image.load(
-            "assets/images/body_horizontal.png"
+            resource_path("assets/images/body_horizontal.png")
         ).convert_alpha()
         self.body_horizontal = pygame.transform.scale(
             self.body_horizontal, (cell_size, cell_size)
@@ -114,22 +134,22 @@ class Snake:
 
         # Load and scale the corner body images
         self.body_tr = pygame.image.load(
-            "assets/images/body_topright.png"
+            resource_path("assets/images/body_topright.png")
         ).convert_alpha()
         self.body_tr = pygame.transform.scale(self.body_tr, (cell_size, cell_size))
 
         self.body_tl = pygame.image.load(
-            "assets/images/body_topleft.png"
+            resource_path("assets/images/body_topleft.png")
         ).convert_alpha()
         self.body_tl = pygame.transform.scale(self.body_tl, (cell_size, cell_size))
 
         self.body_br = pygame.image.load(
-            "assets/images/body_bottomright.png"
+            resource_path("assets/images/body_bottomright.png")
         ).convert_alpha()
         self.body_br = pygame.transform.scale(self.body_br, (cell_size, cell_size))
 
         self.body_bl = pygame.image.load(
-            "assets/images/body_bottomleft.png"
+            resource_path("assets/images/body_bottomleft.png")
         ).convert_alpha()
         self.body_bl = pygame.transform.scale(self.body_bl, (cell_size, cell_size))
 
@@ -268,37 +288,15 @@ class Main:
         pygame.quit()
         sys.exit()
 
+
     def draw_grass_grid(self):
         for row in range(board_size):
-            if row % 2 == 0:
-                for col in range(board_size):
-                    if row == 0 or row == (board_size - 1):
-                        rect = pygame.Rect(
-                            col * cell_size, row * cell_size, cell_size, cell_size
-                        )
-                        pygame.draw.rect(screen, pygame.Color("orange"), rect)
-                    elif col % 2 == 0:
-                        rect = pygame.Rect(
-                            col * cell_size, row * cell_size, cell_size, cell_size
-                        )
-
-                        if col == 0 or col == (board_size - 1):
-                            pygame.draw.rect(screen, pygame.Color("orange"), rect)
-                        else:
-                            pygame.draw.rect(screen, (80, 200, 120), rect)
-            else:
-                for col in range(board_size):
-                    if col % 2 == 0:
-                        if col == 0 or col == board_size - 1:
-                            rect = pygame.Rect(
-                                col * cell_size, row * cell_size, cell_size, cell_size
-                            )
-                            pygame.draw.rect(screen, pygame.Color("orange"), rect)
-                    elif col % 2 != 0:
-                        rect = pygame.Rect(
-                            col * cell_size, row * cell_size, cell_size, cell_size
-                        )
-                        pygame.draw.rect(screen, (80, 200, 120), rect)
+            for col in range(board_size):
+                rect = pygame.Rect(col * cell_size, row * cell_size, cell_size, cell_size)
+                if row == 0 or row == board_size - 1 or col == 0 or col == board_size - 1:
+                    pygame.draw.rect(screen, pygame.Color("orange"), rect)
+                elif (row % 2 == 0 and col % 2 == 0) or (row % 2 != 0 and col % 2 != 0):
+                    pygame.draw.rect(screen, (80, 200, 120), rect)
 
 
 # Game config
