@@ -315,7 +315,7 @@ while True:
 
         # Move snake event
         if event.type == pygame.USEREVENT:
-            pygame.time.set_timer(pygame.USEREVENT, 70)
+            pygame.time.set_timer(pygame.USEREVENT, 90)
             main.update()
 
         if event.type == pygame.KEYDOWN:
